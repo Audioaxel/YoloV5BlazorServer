@@ -1,0 +1,6 @@
+===Global CSS Isolation======================================
+in _Host.cshtml -> <head>
+    <link href="[ProjectName].styles.css" rel="stylesheet" />
+
+
+Check /Module/ModuleExtensions for more Information

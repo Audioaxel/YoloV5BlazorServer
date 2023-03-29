@@ -1,0 +1,57 @@
+@*--- InputField ---*@
+<div class="row">
+    <div class="col-md-4">
+        <label>userName</label>
+        <input class="form-control" @bind-value="@name" />
+    </div>
+</div>
+@*--- InputField ---*@
+
+@*--- Button ---*@
+<div class="row mt-2">
+    <div class="col-md-4">
+        <div class="form-group">
+            <button type="button" class="btn btn-primary" @onclick="@OnButtonClick">Button</button>
+        </div>
+    </div>
+</div>
+@*--- Button ---*@
+
+@*--- Drop Down ---*@
+<select @onchange="SelectTag">
+
+    @foreach (var tag in tags)
+    {
+        <option value=@tag>@tag</option>
+    }
+</select>
+@*--- Drop Down ---*@
+
+
+@*--- Code ---*@
+@code {
+
+    string? name;
+
+    // On Initialized
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+    }
+
+    // On Button Click
+    protected void OnButtonClick()
+    {
+        
+    }
+
+    //--- On DropDown selected ---
+    List<string> tags = new List<string>() { "Maui", "Hawaii", "Niihau", "Kauai", "Kahoolawe" };
+    string? selectedString = "Maui";
+    
+    void SelectTag(ChangeEventArgs e)
+    {
+        selectedString = (e.Value == null) ? "Maui" : e.Value.ToString();
+    }
+}

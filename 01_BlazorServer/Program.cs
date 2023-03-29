@@ -1,3 +1,4 @@
+using BlazorToolBoxLib.Module;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
@@ -21,6 +22,8 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.ConfigureBlazorToolBoxLib();
 
 app.UseStaticFiles();
 
