@@ -2,17 +2,22 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using BlazorToolBoxLib.Services.HttpRequests;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 
-namespace BlazorToolBoxLib.RazorComponents.ImageUpload;
+namespace BlazorToolBoxLib.RazorComponents.ImageUploadYolo;
 
-public class ImageUploadComponentBase : ComponentBase
+public class ImageUploadYoloComponentBase : ComponentBase
 {
     const int MAX_FILE_SIZE = 512 * 1024 * 1024;
     internal string ImageUrl = "";
     internal bool Uploading = false;
     internal List<string> FileUrls = new List<string>();
+
+    [Inject]
+    public IYoloV5ApiImageRequest YoloRequest { get; set; }
+    internal string? YoloResponse { get; set; }
 
     // support for drag/drop
     internal string dropClass = string.Empty;
@@ -55,7 +60,11 @@ public class ImageUploadComponentBase : ComponentBase
 
                 ImageUrl = $"files/{newFileNameWithoutPath}";
 
+                await GetYoloResponse(filename);
+                
+
                 await ListFiles();
+
 
                 Uploading = false;
             }
@@ -67,6 +76,12 @@ public class ImageUploadComponentBase : ComponentBase
             System.Diagnostics.Debug.WriteLine(ex.Message);
             throw;
         }
+    }
+
+    internal async Task GetYoloResponse(string filePath)
+    {
+        YoloResponse = await YoloRequest.SendRequest(ImageUrl);
+        await YoloRequest.TestImageDraw(filePath);
     }
 
     internal async Task ListFiles()
