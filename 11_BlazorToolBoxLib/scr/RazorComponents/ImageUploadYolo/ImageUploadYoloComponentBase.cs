@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using BlazorToolBoxLib.Services.HttpRequests;
+using BlazorToolBoxLib.Services.YoloHelper;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 
@@ -12,8 +13,11 @@ public class ImageUploadYoloComponentBase : ComponentBase
 {
     const int MAX_FILE_SIZE = 512 * 1024 * 1024;
     internal string ImageUrl = "";
+    internal string imagePath = "";
     internal bool Uploading = false;
     internal List<string> FileUrls = new List<string>();
+
+    BoundingBoxes boundingBoxes = new BoundingBoxes();
 
     [Inject]
     public IYoloV5ApiImageRequest YoloRequest { get; set; }
@@ -34,6 +38,8 @@ public class ImageUploadYoloComponentBase : ComponentBase
     {
         dropClass = string.Empty;
 
+        string test = "";
+
         try
         {
             // disable the upload pane
@@ -41,7 +47,7 @@ public class ImageUploadYoloComponentBase : ComponentBase
             await InvokeAsync(StateHasChanged);
 
             // Resize to no more than 400x400
-            var format = "image/png";
+            var format = "image/png/jpeg";
             var resizedImageFile = await args.File.RequestImageFileAsync(format, 400, 400);
 
             using (var stream = resizedImageFile.OpenReadStream(MAX_FILE_SIZE))
@@ -58,10 +64,14 @@ public class ImageUploadYoloComponentBase : ComponentBase
                 // write the file
                 File.WriteAllBytes(filename, buffer);
 
-                ImageUrl = $"files/{newFileNameWithoutPath}";
-
-                await GetYoloResponse(filename);
+                string folderPath = Path.Combine(Directory.GetCurrentDirectory(), "Files");
+                imagePath = folderPath + $"/{newFileNameWithoutPath}";
                 
+
+                ImageUrl = $"files/{newFileNameWithoutPath}";
+               
+                // Hier Shit
+                YoloResponse = await YoloRequest.SendRequest(ImageUrl);             
 
                 await ListFiles();
 
@@ -78,11 +88,6 @@ public class ImageUploadYoloComponentBase : ComponentBase
         }
     }
 
-    internal async Task GetYoloResponse(string filePath)
-    {
-        YoloResponse = await YoloRequest.SendRequest(ImageUrl);
-        await YoloRequest.TestImageDraw(filePath);
-    }
 
     internal async Task ListFiles()
     {
@@ -100,5 +105,11 @@ public class ImageUploadYoloComponentBase : ComponentBase
     protected override async Task OnInitializedAsync()
     {
         await ListFiles();
+    }
+
+    // YoloStuff
+    internal void AnalyseImage()
+    {
+
     }
 }
