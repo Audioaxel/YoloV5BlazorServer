@@ -10,6 +10,9 @@ namespace BlazorToolBoxLib.RazorComponents.ImageUpload;
 public class ImageUploadComponentBase : ComponentBase
 {
     const int MAX_FILE_SIZE = 512 * 1024 * 1024;
+
+    public event EventHandler<ImageUploadEventArgs>? ImageUploaded;
+
     internal string ImageUrl = "";
     internal bool Uploading = false;
     internal List<string> FileUrls = new List<string>();
@@ -57,6 +60,8 @@ public class ImageUploadComponentBase : ComponentBase
 
                 await ListFiles();
 
+                ImageUploaded?.Invoke(this, new ImageUploadEventArgs("Test"));
+
                 Uploading = false;
             }
         }
@@ -85,5 +90,16 @@ public class ImageUploadComponentBase : ComponentBase
     protected override async Task OnInitializedAsync()
     {
         await ListFiles();
+    }
+}
+
+
+public class ImageUploadEventArgs : EventArgs
+{
+    public string ImageFilePath { get; init; }
+
+    public ImageUploadEventArgs(string imageFilePath)
+    {
+        ImageFilePath= imageFilePath;
     }
 }

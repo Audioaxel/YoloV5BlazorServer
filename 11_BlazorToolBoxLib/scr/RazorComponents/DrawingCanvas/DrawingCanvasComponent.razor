@@ -1,6 +1,8 @@
 @using SkiaSharp
 @using System.IO
 
+@using BlazorToolBoxLib.RazorComponents.ImageUpload
+
 @namespace BlazorToolBoxLib.RazorComponents.DrawingCanvas
 
 
@@ -23,6 +25,12 @@
 </div>
 @*--- Button ---*@
 
+@if (test)
+{
+    <h3>@testString</h3>
+    <h3>MACH</h3>
+}
+
 
 @* ==================================================================================== *@
 
@@ -37,6 +45,8 @@
 
     protected override async Task OnInitializedAsync()
     {
+        OnImageUpload();
+
         // Hardcoded Mist
         string folderPath = Path.Combine(Directory.GetCurrentDirectory(), "Files");
         string imagePath = folderPath + "/homer.png";
@@ -121,6 +131,20 @@
         }
 
         _imageDataUrl = null;
+    }
+
+
+    ImageUploadComponentBase imageUploadComponentBase = new ImageUploadComponentBase();
+    bool test = false;
+    string testString = "";
+    private void OnImageUpload()
+    {
+        imageUploadComponentBase.ImageUploaded += (sender, EventArgs) =>
+        {
+            test = true;
+            testString = EventArgs.ImageFilePath;
+            StateHasChanged();
+        };
     }
 }
 
