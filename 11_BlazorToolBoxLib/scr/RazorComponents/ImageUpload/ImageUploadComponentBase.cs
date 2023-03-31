@@ -64,7 +64,7 @@ public class ImageUploadComponentBase : ComponentBase
                 await ListFiles();
 
                 // EventHandler
-                notify.ImageUpload("test");
+                notify.ImageUpload(ImageUrl, filename);
 
                 Uploading = false;
             }

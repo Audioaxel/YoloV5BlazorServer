@@ -1,6 +1,8 @@
 @using BlazorToolBoxLib.Services.Notifications.ImageUpload
 @using BlazorToolBoxLib.Services.YoloHelper
+@using BlazorToolBoxLib.Services.HttpRequests
 @inject IImageUploadNotify notify
+@inject IYoloV5ApiImageRequest request
 @implements IDisposable
 
 @namespace BlazorToolBoxLib.RazorComponents.DrawingCanvas
@@ -9,6 +11,16 @@
 <h3>BoundingBoxes</h3>
 
 <br />
+
+@*--- Button ---*@
+<div class="row mt-2">
+    <div class="col-md-4">
+        <div class="form-group">
+            <button type="button" class="btn btn-primary" @onclick="AnnotateImage" disabled="@(!_uploaded)">Annotade Image</button>
+        </div>
+    </div>
+</div>
+@*--- Button ---*@
 
 @if (_imageDataUrl is not null)
 {
@@ -25,9 +37,10 @@
 </div>
 @*--- Button ---*@
 
-@if (_test is not null)
+@if (_imageUrl is not null)
 {
-    <h5>@_test</h5>
+    <h5>@_imageUrl</h5>
+    <h5>@_filePath</h5>
 }
 
 @* ==================================================================================== *@
@@ -37,7 +50,10 @@
 
     private string? _imageDataUrl = null;
 
-    private string? _test = null;
+    // Uploaded Image
+    private string? _imageUrl = null;
+    private string? _filePath = null;
+    private bool _uploaded = false;
 
     protected override void OnInitialized()
     {
@@ -46,16 +62,23 @@
         notify.OnImageUpload += OnImageUpload;
     }
 
+    private async Task AnnotateImage()
+    {
+        request.SendRequest(_imageUrl);
+    }
+
     private async Task SaveImage()
     {
         boundingBoxes.SaveImage();
         _imageDataUrl = boundingBoxes.ImageDataUrl;
+        _uploaded = true;
         await InvokeAsync(StateHasChanged);
     }
 
     private void OnImageUpload()
     {
-        _test = notify.ImageUrl;
+        _imageUrl = notify.ImageUrl;
+        _filePath = notify.FilePath;
         StateHasChanged();
     }
 
