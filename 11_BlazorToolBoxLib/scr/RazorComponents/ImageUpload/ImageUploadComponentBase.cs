@@ -11,8 +11,6 @@ public class ImageUploadComponentBase : ComponentBase
 {
     const int MAX_FILE_SIZE = 512 * 1024 * 1024;
 
-    public event EventHandler<ImageUploadEventArgs>? ImageUploaded;
-
     internal string ImageUrl = "";
     internal bool Uploading = false;
     internal List<string> FileUrls = new List<string>();
@@ -59,8 +57,6 @@ public class ImageUploadComponentBase : ComponentBase
                 ImageUrl = $"files/{newFileNameWithoutPath}";
 
                 await ListFiles();
-
-                ImageUploaded?.Invoke(this, new ImageUploadEventArgs("Test"));
 
                 Uploading = false;
             }
