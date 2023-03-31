@@ -100,6 +100,6 @@ public class BoundingBoxes
             _bitmap.Encode(SKEncodedImageFormat.Jpeg, 100).SaveTo(imageStream);
         }
 
-        _imageDataUrl = null;
+        // _imageDataUrl = null;
     }
 }
