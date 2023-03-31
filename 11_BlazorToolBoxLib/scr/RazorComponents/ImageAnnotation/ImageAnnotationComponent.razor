@@ -5,7 +5,7 @@
 @inject IYoloV5ApiImageRequest request
 @implements IDisposable
 
-@namespace BlazorToolBoxLib.RazorComponents.DrawingCanvas
+@namespace BlazorToolBoxLib.RazorComponents.ImageAnnotationComponent
 
 
 <h3>BoundingBoxes</h3>
@@ -37,11 +37,18 @@
 </div>
 @*--- Button ---*@
 
-@if (_imageUrl is not null)
+@if (_imageRelativePath is not null)
 {
-    <h5>@_imageUrl</h5>
+    <h5>@_imageRelativePath</h5>
     <h5>@_filePath</h5>
 }
+
+@if (response is not null)
+{
+    <h5>@response</h5>
+
+}
+
 
 @* ==================================================================================== *@
 
@@ -51,34 +58,38 @@
     private string? _imageDataUrl = null;
 
     // Uploaded Image
-    private string? _imageUrl = null;
+    private string? _imageRelativePath = null;
     private string? _filePath = null;
+    private string? _fileName = null;
     private bool _uploaded = false;
+
+    private string response = null;
 
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        boundingBoxes.DrawBoundingBoxes();
         notify.OnImageUpload += OnImageUpload;
     }
 
     private async Task AnnotateImage()
     {
-        request.SendRequest(_imageUrl);
+        response = await request.SendRequest(_imageRelativePath);
+        boundingBoxes.DrawBoundingBoxes(_fileName, response);
+        _imageDataUrl = boundingBoxes.ImageDataUrl;
     }
 
     private async Task SaveImage()
     {
         boundingBoxes.SaveImage();
-        _imageDataUrl = boundingBoxes.ImageDataUrl;
-        _uploaded = true;
         await InvokeAsync(StateHasChanged);
     }
 
     private void OnImageUpload()
     {
-        _imageUrl = notify.ImageUrl;
+        _imageRelativePath = notify.ImageRelativePath;
         _filePath = notify.FilePath;
+        _fileName = notify.FileName;
+        _uploaded = true;
         StateHasChanged();
     }
 

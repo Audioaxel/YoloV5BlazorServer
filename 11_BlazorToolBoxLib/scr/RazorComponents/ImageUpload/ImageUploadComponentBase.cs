@@ -12,7 +12,7 @@ public class ImageUploadComponentBase : ComponentBase
 {
     const int MAX_FILE_SIZE = 512 * 1024 * 1024;
 
-    internal string ImageUrl = "";
+    internal string ImageRelativePath = "";
     internal bool Uploading = false;
     internal List<string> FileUrls = new List<string>();
 
@@ -59,12 +59,12 @@ public class ImageUploadComponentBase : ComponentBase
                 // write the file
                 File.WriteAllBytes(filename, buffer);
 
-                ImageUrl = $"files/{newFileNameWithoutPath}";
+                ImageRelativePath = $"files/{newFileNameWithoutPath}";
 
                 await ListFiles();
 
                 // EventHandler
-                notify.ImageUpload(ImageUrl, filename);
+                notify.ImageUpload(ImageRelativePath, "schessaufdeinfilepath", newFileNameWithoutPath);
 
                 Uploading = false;
             }

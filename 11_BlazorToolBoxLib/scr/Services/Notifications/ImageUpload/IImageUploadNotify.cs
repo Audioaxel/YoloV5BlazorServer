@@ -6,8 +6,9 @@ public interface IImageUploadNotify
 {
     event Action? OnImageUpload;
 
-    string ImageUrl { get; set; }
+    string ImageRelativePath { get; set; }
     string FilePath { get; set; }
+    string FileName { get; set; }
 
-    void ImageUpload(string imageUrl, string filePath);
+    void ImageUpload(string ImageRelativePath, string filePath, string fileName);
 }

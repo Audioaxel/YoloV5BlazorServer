@@ -2,6 +2,8 @@ using SkiaSharp;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using BlazorToolBoxLib.Models;
+using Newtonsoft.Json;
 
 namespace BlazorToolBoxLib.Services.YoloHelper;
 
@@ -14,35 +16,35 @@ public class BoundingBoxes
     private string? _imageDataUrl;
     
     private SKColor _skColor = new SKColor(196, 0, 203);
+    private string? _saveImagePath;
 
 
     public string? ImageDataUrl => _imageDataUrl;
 
-    public void DrawBoundingBoxes()
+
+
+    public void DrawBoundingBoxes(string fileName, string response)
     {
+        // string imagePath, Dictionary coordinates
         // Hardcoded Mist
         string folderPath = Path.Combine(Directory.GetCurrentDirectory(), "Files");
-        string imagePath = folderPath + "/homer.png";
-        string savedImagePath = folderPath + "/annotated_homer.jpg";
+        string imagePath = folderPath + $"/{fileName}";
+
+        // Zerpflück den Namen und mach neu wie in fileupload
+        string justFileName = Path.GetFileNameWithoutExtension(fileName);
+        string newFileNameWithoutPath = $"{justFileName}_annotaded.png";
+        string savedImagePath = folderPath + $"/{newFileNameWithoutPath}";
+
+        _saveImagePath = savedImagePath;
             
         // Laden des Bildes
         _bitmap = SKBitmap.Decode(imagePath);
 
         // Erkannte Objekte
-        var erkannteObjekte = new List<Dictionary<string, object>>
-        {
-            new Dictionary<string, object>
-            {
-                {"xmin", 59},
-                {"ymin", 12},
-                {"xmax", 355},
-                {"ymax", 398},
-                {"name", "person"}
-            }
-        };
-
+        var objects = JsonDemodulator(response);
+    
         // Schleife über alle erkannten Objekte
-        foreach (var obj in erkannteObjekte)
+        foreach (var obj in objects)
         {
             // Extrahieren der Koordinaten des erkannten Objekts
             var xmin = Convert.ToInt32(obj["xmin"]);
@@ -89,17 +91,36 @@ public class BoundingBoxes
 
     public void SaveImage()
     {
-        // Hardcoded Mist
-        string folderPath = Path.Combine(Directory.GetCurrentDirectory(), "Files");
-        string imagePath = folderPath + "/homer.png";
-        string savedImagePath = folderPath + "/annotated_homer.jpg";
-
-        // Save Image
-        using (var imageStream = File.OpenWrite(savedImagePath))
+        if (!string.IsNullOrEmpty(_saveImagePath))
         {
-            _bitmap.Encode(SKEncodedImageFormat.Jpeg, 100).SaveTo(imageStream);
+            // Save Image
+            using (var imageStream = File.OpenWrite(_saveImagePath))
+            {
+                _bitmap.Encode(SKEncodedImageFormat.Jpeg, 100).SaveTo(imageStream);
+            }
+        }
+    }
+
+    private List<Dictionary<string, object>> JsonDemodulator(string response)
+    {
+        var serializedClasses = JsonConvert.DeserializeObject<List<YoloCoordinates>>(response);
+
+        var listOfCoordinates = new List<Dictionary<string, object>>();      
+
+        foreach (var entry in serializedClasses)
+        {
+            var dict = new Dictionary<string, object>() 
+            { 
+                { "xmin", entry.xmin },
+                { "ymin", entry.ymin },
+                { "xmax", entry.xmax },
+                { "ymax", entry.ymax },
+                { "name", entry.name }
+            };
+
+            listOfCoordinates.Add(dict);
         }
 
-        // _imageDataUrl = null;
+        return listOfCoordinates;
     }
 }
