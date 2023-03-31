@@ -1,6 +1,7 @@
-
-
+@using BlazorToolBoxLib.Services.Notifications.ImageUpload
 @using BlazorToolBoxLib.Services.YoloHelper
+@inject IImageUploadNotify notify
+@implements IDisposable
 
 @namespace BlazorToolBoxLib.RazorComponents.DrawingCanvas
 
@@ -24,6 +25,11 @@
 </div>
 @*--- Button ---*@
 
+@if (_test is not null)
+{
+    <h5>@_test</h5>
+}
+
 @* ==================================================================================== *@
 
 @code {
@@ -31,10 +37,13 @@
 
     private string? _imageDataUrl = null;
 
+    private string? _test = null;
+
     protected override void OnInitialized()
     {
         base.OnInitialized();
         boundingBoxes.DrawBoundingBoxes();
+        notify.OnImageUpload += OnImageUpload;
     }
 
     private async Task SaveImage()
@@ -42,6 +51,17 @@
         boundingBoxes.SaveImage();
         _imageDataUrl = boundingBoxes.ImageDataUrl;
         await InvokeAsync(StateHasChanged);
+    }
+
+    private void OnImageUpload()
+    {
+        _test = notify.ImageUrl;
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        notify.OnImageUpload -= OnImageUpload;
     }
 }
 

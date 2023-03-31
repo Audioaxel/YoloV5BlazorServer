@@ -4,6 +4,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
+using BlazorToolBoxLib.Services.Notifications.ImageUpload;
 
 namespace BlazorToolBoxLib.RazorComponents.ImageUpload;
 
@@ -14,6 +15,10 @@ public class ImageUploadComponentBase : ComponentBase
     internal string ImageUrl = "";
     internal bool Uploading = false;
     internal List<string> FileUrls = new List<string>();
+
+    // EventHandler
+    [Inject]
+    public IImageUploadNotify notify { get; set;}
 
     // support for drag/drop
     internal string dropClass = string.Empty;
@@ -57,6 +62,9 @@ public class ImageUploadComponentBase : ComponentBase
                 ImageUrl = $"files/{newFileNameWithoutPath}";
 
                 await ListFiles();
+
+                // EventHandler
+                notify.ImageUpload("test");
 
                 Uploading = false;
             }

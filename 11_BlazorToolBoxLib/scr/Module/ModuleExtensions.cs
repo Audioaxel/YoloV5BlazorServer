@@ -1,5 +1,6 @@
 using System.IO;
 using BlazorToolBoxLib.Services.HttpRequests;
+using BlazorToolBoxLib.Services.Notifications.ImageUpload;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
@@ -10,7 +11,8 @@ public static class ModuleExtensions
 {
     public static void RegisterBlazorToolBoxLibServices(this IServiceCollection services)
     {
-        services.AddSingleton<IYoloV5ApiImageRequest, YoloV5ApiImageRequest>(); 
+        services.AddSingleton<IYoloV5ApiImageRequest, YoloV5ApiImageRequest>();
+        services.AddScoped<IImageUploadNotify, ImageUploadNotify>(); 
     }
 
     public static void ConfigureBlazorToolBoxLib(this WebApplication app)
