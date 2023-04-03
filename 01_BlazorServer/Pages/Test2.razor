@@ -1,0 +1,17 @@
+@page "/test2"
+@using BlazorToolBoxLib.RazorComponents.DragAndDropUpload
+
+<DragAndDropUpload FileType=EFileType.ImageCompressed OnUpload="HandleOnUpload"></DragAndDropUpload>
+
+@if (!string.IsNullOrEmpty(Test))
+{
+    <h2>@Test</h2>
+}
+
+@code {
+    string Test = string.Empty;
+    private async Task HandleOnUpload(string filePath)
+    {
+        Test = filePath;
+    }
+}

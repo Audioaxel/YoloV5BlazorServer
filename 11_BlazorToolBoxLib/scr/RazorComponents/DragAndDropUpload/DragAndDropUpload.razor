@@ -1,0 +1,48 @@
+@using Microsoft.AspNetCore.Components.Forms;
+@inherits DragAndDropUploadBase
+
+@namespace BlazorToolBoxLib.RazorComponents.DragAndDropUpload
+
+
+@* Aufgrund von InputFile (Microsoft.AspNetCore.Components.Forms) funktioniert das isolierte css leider nicht:/ *@
+<style>
+    .dropArea {
+    border: 2px dashed gray;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: lightgray;
+    font-size: 1.5rem;
+    cursor: pointer;
+    position: relative;
+    min-height: 150px;
+}
+
+    .dropArea:hover {
+        background-color: antiquewhite;
+        color: #333;
+    }
+
+    .dropArea input[type=file] {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
+    }
+
+.dropAreaDrug {
+    background-color: darkgrey;
+}
+</style>
+
+@* ============================================================================================================= *@
+
+<div class="dropArea @_dropClass">
+    Drag and drop photo, or click to select a local file.
+    <InputFile disabled="@_uploading"
+               OnChange="OnInputFileChange"
+               @ondragenter="HandleDragEnter"
+               @ondragleave="HandleDragLeave" />
+</div>

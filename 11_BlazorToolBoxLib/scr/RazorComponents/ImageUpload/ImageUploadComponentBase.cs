@@ -22,6 +22,7 @@ public class ImageUploadComponentBase : ComponentBase
 
     // support for drag/drop
     internal string dropClass = string.Empty;
+    
     internal void HandleDragEnter()
     {
         dropClass = "dropAreaDrug";
